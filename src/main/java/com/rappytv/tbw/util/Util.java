@@ -1,0 +1,175 @@
+package com.rappytv.tbw.util;
+
+import com.rappytv.tbw.ToolBreakWarning;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiChat;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Locale;
+
+public class Util {
+
+    public static boolean swordWarned = false;
+    public static boolean pickWarned = false;
+    public static boolean axeWarned = false;
+    public static boolean shovelWarned = false;
+
+    private static final int[] sword = {268, 272, 267, 283, 276};
+    private static final int[] pick = {270, 274, 257, 285, 278};
+    private static final int[] axe = {271, 275, 258, 286, 279};
+    private static final int[] spade = {269, 273, 256, 284, 277};
+
+    public static void msg(String text, boolean prefix) {
+        ToolBreakWarning.getMain().getApi().displayMessageInChat(prefix ? ToolBreakWarning.prefix + text : text);
+    }
+
+    public static String formatNumber(int number) {
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+        DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
+        symbols.setGroupingSeparator('.');
+        formatter.setDecimalFormatSymbols(symbols);
+
+        return formatter.format(number);
+    }
+
+    public static boolean isLastHit(ItemStack i) {
+        if(!ToolBreakWarning.lastHitWarn) return false;
+        return (i.getMaxDamage() - i.getItemDamage()) == 0;
+    }
+
+    public static boolean isSword(ItemStack i) {
+        if(i.getItem().equals(Item.getItemById(sword[0]))) return true;
+        else if(i.getItem().equals(Item.getItemById(sword[1]))) return true;
+        else if(i.getItem().equals(Item.getItemById(sword[2]))) return true;
+        else if(i.getItem().equals(Item.getItemById(sword[3]))) return true;
+        else return i.getItem().equals(Item.getItemById(sword[4]));
+    }
+
+    public static boolean isPickaxe(ItemStack i) {
+        if(i.getItem().equals(Item.getItemById(pick[0]))) return true;
+        else if(i.getItem().equals(Item.getItemById(pick[1]))) return true;
+        else if(i.getItem().equals(Item.getItemById(pick[2]))) return true;
+        else if(i.getItem().equals(Item.getItemById(pick[3]))) return true;
+        else return i.getItem().equals(Item.getItemById(pick[4]));
+    }
+
+    public static boolean isAxe(ItemStack i) {
+        if(i.getItem().equals(Item.getItemById(axe[0]))) return true;
+        else if(i.getItem().equals(Item.getItemById(axe[1]))) return true;
+        else if(i.getItem().equals(Item.getItemById(axe[2]))) return true;
+        else if(i.getItem().equals(Item.getItemById(axe[3]))) return true;
+        else return i.getItem().equals(Item.getItemById(axe[4]));
+    }
+
+    public static boolean isShovel(ItemStack i) {
+        if(i.getItem().equals(Item.getItemById(spade[0]))) return true;
+        else if(i.getItem().equals(Item.getItemById(spade[1]))) return true;
+        else if(i.getItem().equals(Item.getItemById(spade[2]))) return true;
+        else if(i.getItem().equals(Item.getItemById(spade[3]))) return true;
+        else return i.getItem().equals(Item.getItemById(spade[4]));
+    }
+
+    public static void swordUsed(ItemStack i) {
+        int itemWarnInt = (ToolBreakWarning.warnPercentageSword * i.getMaxDamage()) / 100;
+        int itemUsedInt = i.getMaxDamage() - i.getItemDamage();
+        if(ToolBreakWarning.debug) {
+            msg("\u00A7c\u00A7l------ Event triggered ------\n\u00A7eEvent: \u00A74Sword in main hand\n\u00A7eTool used: \u00A74" + (ToolBreakWarning.format ? formatNumber(itemUsedInt) : itemUsedInt) + "\n\u00A7eTool warn: \u00A74" + (ToolBreakWarning.format ? formatNumber(itemWarnInt) : itemWarnInt) + "\n\u00A7c\u00A7l---------------------------", false);
+        }
+
+        if(itemUsedInt == itemWarnInt) {
+            if(!swordWarned) {
+                msg(ToolBreakWarning.warnMsg.replace("{durability}", ToolBreakWarning.warnPercentageSword + ""), true);
+                msg(ToolBreakWarning.warnMsg.replace("{durability}", ToolBreakWarning.warnPercentageSword + ""), true);
+                msg(ToolBreakWarning.warnMsg.replace("{durability}", ToolBreakWarning.warnPercentageSword + ""), true);
+                Minecraft.getMinecraft().thePlayer.playSound("BLOCK_ANVIL_USE", 100f, 0f);
+                swordWarned = true;
+            }
+        } else if(isLastHit(i)) {
+            if(!swordWarned) {
+                msg(ToolBreakWarning.lastHitMsg, true);
+                msg(ToolBreakWarning.lastHitMsg, true);
+                msg(ToolBreakWarning.lastHitMsg, true);
+                Minecraft.getMinecraft().thePlayer.playSound("BLOCK_ANVIL_USE", 100f, 0f);
+                swordWarned = true;
+            }
+        } else {
+            swordWarned = false;
+        }
+    }
+
+    public static void pickaxeUsed(ItemStack i) {
+        int itemWarnInt = (ToolBreakWarning.warnPercentagePickaxe * i.getMaxDamage()) / 100;
+        int itemUsedInt = i.getMaxDamage() - i.getItemDamage();
+        if(ToolBreakWarning.debug) {
+            msg("\u00A7c\u00A7l------ Event triggered ------\n\u00A7eEvent: \u00A74Pickaxe in main hand\n\u00A7eTool used: \u00A74" + (ToolBreakWarning.format ? formatNumber(itemUsedInt) : itemUsedInt) + "\n\u00A7eTool warn: \u00A74" + (ToolBreakWarning.format ? formatNumber(itemWarnInt) : itemWarnInt) + "\n\u00A7c\u00A7l---------------------------", false);
+        }
+
+        if(itemUsedInt == itemWarnInt) {
+            if(!pickWarned) {
+                msg(ToolBreakWarning.warnMsg.replace("{durability}", ToolBreakWarning.warnPercentagePickaxe + ""), true);
+                Minecraft.getMinecraft().displayGuiScreen(new GuiChat());
+                pickWarned = true;
+            }
+        } else if(isLastHit(i)) {
+            if(!pickWarned) {
+                msg(ToolBreakWarning.lastHitMsg, true);
+                Minecraft.getMinecraft().displayGuiScreen(new GuiChat());
+                pickWarned = true;
+            }
+        } else {
+            pickWarned = false;
+        }
+    }
+
+    public static void axeUsed(ItemStack i) {
+        int itemWarnInt = (ToolBreakWarning.warnPercentageAxe * i.getMaxDamage()) / 100;
+        int itemUsedInt = i.getMaxDamage() - i.getItemDamage();
+        if(ToolBreakWarning.debug) {
+            msg("\u00A7c\u00A7l------ Event triggered ------\n\u00A7eEvent: \u00A74Axe in main hand\n\u00A7eTool used: \u00A74" + (ToolBreakWarning.format ? Util.formatNumber(itemUsedInt) : itemUsedInt) + "\n\u00A7eTool warn: \u00A74" + (ToolBreakWarning.format ? Util.formatNumber(itemWarnInt) : itemWarnInt) + "\n\u00A7c\u00A7l---------------------------", false);
+        }
+
+        if(itemUsedInt == itemWarnInt) {
+            if(!axeWarned) {
+                msg(ToolBreakWarning.warnMsg.replace("{durability}", ToolBreakWarning.warnPercentageAxe + ""), true);
+                Minecraft.getMinecraft().displayGuiScreen(new GuiChat());
+                axeWarned = true;
+            }
+        } else if(isLastHit(i)) {
+            if(!axeWarned) {
+                msg(ToolBreakWarning.lastHitMsg, true);
+                Minecraft.getMinecraft().displayGuiScreen(new GuiChat());
+                axeWarned = true;
+            }
+        } else {
+            axeWarned = false;
+        }
+    }
+
+    public static void shovelUsed(ItemStack i) {
+        int itemWarnInt = (ToolBreakWarning.warnPercentageShovel * i.getMaxDamage()) / 100;
+        int itemUsedInt = i.getMaxDamage() - i.getItemDamage();
+        if(ToolBreakWarning.debug) {
+            msg("\u00A7c\u00A7l------ Event triggered ------\n\u00A7eEvent: \u00A74Shovel in main hand\n\u00A7eTool used: \u00A74" + (ToolBreakWarning.format ? formatNumber(itemUsedInt) : itemUsedInt) + "\n\u00A7eTool warn: \u00A74" + (ToolBreakWarning.format ? formatNumber(itemWarnInt) : itemWarnInt) + "\n\u00A7c\u00A7l---------------------------", false);
+        }
+
+        if(itemUsedInt == itemWarnInt) {
+            if(!shovelWarned) {
+                msg(ToolBreakWarning.warnMsg.replace("{durability}", ToolBreakWarning.warnPercentageShovel + ""), true);
+                Minecraft.getMinecraft().displayGuiScreen(new GuiChat());
+                shovelWarned = true;
+            }
+        } else if(isLastHit(i)) {
+            if(!shovelWarned) {
+                msg(ToolBreakWarning.lastHitMsg, true);
+                Minecraft.getMinecraft().displayGuiScreen(new GuiChat());
+                shovelWarned = true;
+            }
+        } else {
+            shovelWarned = false;
+        }
+    }
+}
